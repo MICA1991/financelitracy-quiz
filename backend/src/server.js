@@ -64,12 +64,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Finance Quiz API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+  res.status(200).send('OK');
 });
 
 // API routes
