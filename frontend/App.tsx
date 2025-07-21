@@ -9,7 +9,7 @@ import { azureAdLogin, checkBackendHealth, saveToLocalStorage, getFromLocalStora
 import AdminDashboard from './src/components/AdminDashboard';
 import axios from 'axios';
 
-//Trigger Redeploy
+//Trigger Redeploy once more
 
 // Gemini API key: Vite exposes env vars as import.meta.env.VITE_GEMINI_API_KEY
 const GEMINI_API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY || (import.meta as any).env.GEMINI_API_KEY || (import.meta as any).env.API_KEY;
