@@ -64,7 +64,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+  res.json({ success: true, message: 'Finance Quiz API is running' });
 });
 
 // API routes
@@ -182,7 +182,6 @@ app.listen(PORT, () => {
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
   console.log(`📚 API docs: http://localhost:${PORT}/api`);
-  console.log('JWT_SECRET at runtime:', process.env.JWT_SECRET);
 });
 
 export default app; 
