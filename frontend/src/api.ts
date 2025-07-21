@@ -157,7 +157,7 @@ export const getStudentDetails = async (studentId: string, token: string): Promi
 // Utility function to check if backend is available
 export const checkBackendHealth = async (): Promise<boolean> => {
   try {
-    const baseUrl = (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const response = await fetch(`${baseUrl.replace('/api', '')}/health`, {
       method: 'GET',
     });
