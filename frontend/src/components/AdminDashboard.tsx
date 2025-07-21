@@ -73,8 +73,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminUser, onAdminLogou
         ...(filters.search && { search: filters.search })
       });
 
-      const API_BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_BASE_URL}/admin/sessions?${queryParams}`, {
+      const response = await fetch(`http://localhost:5000/api/admin/sessions?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -119,8 +118,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminUser, onAdminLogou
         ...(filters.endDate && { endDate: filters.endDate })
       });
 
-      const API_BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_BASE_URL}/admin/export/performance?${queryParams}`, {
+      const response = await fetch(`http://localhost:5000/api/admin/export/performance?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
