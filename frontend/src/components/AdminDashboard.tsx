@@ -49,6 +49,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminUser, onAdminLogou
   const [totalPages, setTotalPages] = useState(1);
   const [exporting, setExporting] = useState(false);
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   // Fetch student performance data
   const fetchStudentPerformances = useCallback(async () => {
     try {
@@ -73,7 +75,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminUser, onAdminLogou
         ...(filters.search && { search: filters.search })
       });
 
-      const response = await fetch(`http://localhost:5000/api/admin/sessions?${queryParams}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/sessions?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -98,7 +100,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminUser, onAdminLogou
     } finally {
       setLoading(false);
     }
-  }, [currentPage, sortConfig, filters]);
+  }, [currentPage, sortConfig, filters, API_BASE_URL]);
 
   // Export to Excel
   const exportToExcel = async () => {
@@ -118,7 +120,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ adminUser, onAdminLogou
         ...(filters.endDate && { endDate: filters.endDate })
       });
 
-      const response = await fetch(`http://localhost:5000/api/admin/export/performance?${queryParams}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/export/performance?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
