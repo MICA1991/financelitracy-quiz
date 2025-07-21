@@ -9,8 +9,22 @@ import { azureAdLogin, checkBackendHealth, saveToLocalStorage, getFromLocalStora
 import AdminDashboard from './src/components/AdminDashboard';
 import axios from 'axios';
 
+// Add Vite env type declaration for TypeScript
+interface ImportMetaEnv {
+  readonly VITE_API_BASE_URL: string;
+  readonly VITE_GEMINI_API_KEY?: string;
+  readonly GEMINI_API_KEY?: string;
+  readonly API_KEY?: string;
+}
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // Gemini API key: Vite exposes env vars as import.meta.env.VITE_GEMINI_API_KEY
-const GEMINI_API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY || (import.meta as any).env.GEMINI_API_KEY || (import.meta as any).env.API_KEY;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || import.meta.env.API_KEY;
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   const newArray = [...array];
@@ -90,7 +104,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess, onNavigateToA
   const handleDemoLogin = async () => {
     // Use a real backend student for demo
     try {
-      const response = await fetch('http://localhost:5000/api/auth/student/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/student/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -181,7 +195,7 @@ const AdminLoginScreen: React.FC<AdminLoginScreenProps> = ({ onAdminLoginSuccess
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/admin/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -260,8 +274,8 @@ const AdminLoginScreen: React.FC<AdminLoginScreenProps> = ({ onAdminLoginSuccess
 async function fetchSessionReport(sessionId: string, token: string, isAdmin: boolean = false) {
   try {
     const url = isAdmin
-      ? `http://localhost:5000/api/admin/session/${sessionId}`
-      : `http://localhost:5000/api/quiz/session/${sessionId}/report`;
+      ? `${API_BASE_URL}/admin/session/${sessionId}`
+      : `${API_BASE_URL}/quiz/session/${sessionId}/report`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -742,7 +756,7 @@ const App: React.FC = () => {
     if (userToken) {
       try {
         console.log('[FRONTEND] Starting session with token:', userToken, 'payload:', { level });
-        const response = await fetch('http://localhost:5000/api/quiz/session/start', {
+        const response = await fetch(`${API_BASE_URL}/quiz/session/start`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -788,7 +802,7 @@ const App: React.FC = () => {
   // Utility to fetch student history from backend
   async function fetchStudentHistory(token: string) {
     try {
-      const response = await fetch('http://localhost:5000/api/quiz/history', {
+      const response = await fetch(`${API_BASE_URL}/quiz/history`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -928,7 +942,7 @@ const App: React.FC = () => {
           selectedCategories,
           timeSpent: 0
         });
-        const response = await fetch('http://localhost:5000/api/quiz/session/answer', {
+        const response = await fetch(`${API_BASE_URL}/quiz/session/answer`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -988,7 +1002,7 @@ const App: React.FC = () => {
     }
     try {
       console.log('[FRONTEND] handleSubmitFeedback: sessionId', sessionId, 'userToken', userToken);
-      const response = await fetch('http://localhost:5000/api/quiz/session/complete', {
+      const response = await fetch(`${API_BASE_URL}/quiz/session/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
