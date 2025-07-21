@@ -12,51 +12,45 @@ on:
       - 'frontend/**'
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: '20.x'
   AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-        
+
     - name: Verify frontend directory
       run: |
         echo "Checking frontend directory structure..."
         ls -la frontend/
         echo "Checking package.json exists..."
         test -f frontend/package.json || exit 1
-        
+
     - name: Install dependencies
       working-directory: ./frontend
       run: npm ci
-      
+
     - name: Build application
       working-directory: ./frontend
-      env:
-        VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-        VITE_AZURE_CLIENT_ID: ${{ secrets.VITE_AZURE_CLIENT_ID }}
-        VITE_AZURE_TENANT_ID: ${{ secrets.VITE_AZURE_TENANT_ID }}
-        VITE_AZURE_REDIRECT_URI: ${{ secrets.VITE_AZURE_REDIRECT_URI }}
-        VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
       run: npm run build
-      
+
     - name: Verify build output
       run: |
         echo "Checking build output..."
         ls -la frontend/dist/
         echo "Build completed successfully!"
-      
+
     - name: Deploy to Azure Static Web Apps
       uses: Azure/static-web-apps-deploy@v1
       with:
@@ -65,4 +59,4 @@ jobs:
         action: "upload"
         app_location: "/frontend"
         output_location: "dist"
-        deployment_environment: production 
+        deployment_environment: production
