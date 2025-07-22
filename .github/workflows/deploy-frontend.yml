@@ -22,7 +22,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20   # <-- Set your Node.js version here
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
 
@@ -53,6 +53,6 @@ jobs:
         azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         action: "upload"
-        app_location: "/frontend"
+        app_location: "frontend"        # <-- remove leading slash
         output_location: "dist"
         deployment_environment: production
