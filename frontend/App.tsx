@@ -1064,9 +1064,10 @@ const App: React.FC = () => {
   const studentDisplayIdentifier = currentStudentId || currentUserMobile;
 
   // Screen Rendering Logic
-  if (gameState === GameState.Login) {
+  if (!useIsAuthenticated()) {
     return <LoginScreen onLoginSuccess={handleLoginSuccess} onNavigateToAdminLogin={navigateToAdminLogin} />;
   }
+
   if (gameState === GameState.AdminLogin) {
     return <AdminLoginScreen onAdminLoginSuccess={handleAdminLoginSuccess} onBackToStudentLogin={navigateToStudentLogin} />;
   }
