@@ -12,62 +12,77 @@ on:
       - 'backend/**'
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: '20.x'
   AZURE_WEBAPP_NAME: finance-quiz-api
   AZURE_WEBAPP_PACKAGE_PATH: './backend'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
-        
-    - name: Verify backend directory
-      run: |
-        echo "Checking backend directory structure..."
-        ls -la backend/
-        echo "Checking package.json exists..."
-        test -f backend/package.json || exit 1
-        
-    - name: Install dependencies
-      working-directory: ./backend
-      run: npm ci
-      
-    - name: Run tests
-      working-directory: ./backend
-      run: npm test || echo "Tests failed but continuing deployment"
-      
-    - name: Build application
-      working-directory: ./backend
-      run: npm run build || echo "Build step completed"
-      
-    - name: Deploy to Azure App Service
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./backend
-        
-    - name: Health check
-      run: |
-        echo "Waiting for deployment to complete..."
-        sleep 30
-        echo "Testing health endpoint..."
-        curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || exit 1
-        
-    - name: Seed database
-      if: github.ref == 'refs/heads/main'
-      run: |
-        echo "Seeding database..."
-        curl -X POST https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/admin/seed \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer ${{ secrets.ADMIN_TOKEN }}" || echo "Database seeding failed or not configured" 
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      # Clean npm cache and node_modules for a fresh build
+      - name: Clean npm cache and node_modules
+        run: |
+          cd backend
+          npm cache clean --force
+          rm -rf node_modules
+
+      # Verify backend directory and package.json
+      - name: Verify backend directory
+        run: |
+          echo "Checking backend directory structure..."
+          ls -la backend/
+          echo "Checking package.json exists..."
+          test -f backend/package.json || exit 1
+
+      # Install dependencies
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      # Run tests (do not fail deployment if tests fail)
+      - name: Run tests
+        working-directory: ./backend
+        run: npm test || echo "Tests failed but continuing deployment"
+
+      # Build application (no-op if not needed)
+      - name: Build application
+        working-directory: ./backend
+        run: npm run build || echo "Build step completed"
+
+      # Deploy to Azure App Service
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./backend
+
+      # Health check
+      - name: Health check
+        run: |
+          echo "Waiting for deployment to complete..."
+          sleep 30
+          echo "Testing health endpoint..."
+          curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || exit 1
+
+      # (Optional) Seed database if on main branch
+      - name: Seed database
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Seeding database..."
+          curl -X POST https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/api/admin/seed \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.ADMIN_TOKEN }}" || echo "Database seeding failed or not configured" 
