@@ -1,4 +1,4 @@
-name: Deploy Backend to Azure App Service 2nd time
+name: Deploy Backend to Azure App Service
 
 on:
   push:
