@@ -61,8 +61,13 @@ jobs:
       - name: Build application
         working-directory: ./backend
         run: npm run build || echo "Build step completed"
-
-      # Deploy to Azure App Service
+      # Zip backend contents (not the folder itself)
+      - name: Zip backend contents
+        run: |
+          cd backend
+          zip -r ../backend.zip .
+    
+     # Deploy to Azure App Service
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
