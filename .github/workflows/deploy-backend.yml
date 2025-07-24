@@ -74,7 +74,7 @@ jobs:
       - name: Health check
         run: |
           echo "Waiting for deployment to complete..."
-          sleep 30
+          sleep 20
           echo "Testing health endpoint..."
           curl -f https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || exit 1
 
